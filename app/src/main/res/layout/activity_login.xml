@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.facemaskdetection.LoginActivity">
+
+    <EditText
+        android:layout_width="250dp"
+        android:layout_height="70dp"
+        android:background="@drawable/capsule"
+        android:hint="Enter username"
+        android:id="@+id/loginID"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"
+        android:padding="15dp"
+        android:textColor="#000000"
+
+        />
+    <EditText
+        android:layout_width="250dp"
+        android:layout_height="70dp"
+        android:background="@drawable/capsule"
+        android:hint="Enter password"
+        android:id="@+id/loginPSW"
+        android:layout_below="@+id/loginID"
+        android:layout_centerHorizontal="true"
+        android:padding="15dp"
+        android:layout_marginTop="15dp"
+        android:textColor="#000000"/>
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:id="@+id/loginCB"
+        android:layout_below="@+id/loginPSW"
+        android:text="Signal Login"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:background="@drawable/btncapsule"
+        android:text="login"
+        android:id="@+id/loginBTN"
+        android:textColor="#ffffff"
+        android:layout_below="@id/loginCB"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+
+        />
+
+
+</RelativeLayout>
