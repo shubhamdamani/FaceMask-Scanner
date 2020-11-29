@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "166224497644",
+    "firebase_url": "https://facemaskscanner.firebaseio.com",
+    "project_id": "facemaskscanner",
+    "storage_bucket": "facemaskscanner.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166224497644:android:54f39fc147de98f6890ec9",
+        "android_client_info": {
+          "package_name": "com.example.aps1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166224497644-f2umkg5a33glge55p077bbc9ekqaoaf4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aps1",
+            "certificate_hash": "78b59132df6e15c6adcf21fd0594131a523bb59b"
+          }
+        },
+        {
+          "client_id": "166224497644-rgva5l11qatjs65k3s0i0ce61ph347im.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ4TBiUFnuuGCRAR-xBXKaaTXNavcESk8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166224497644-rgva5l11qatjs65k3s0i0ce61ph347im.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
