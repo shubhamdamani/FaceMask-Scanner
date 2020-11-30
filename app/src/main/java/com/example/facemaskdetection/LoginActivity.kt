@@ -10,8 +10,10 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import com.example.aps1.MainActivity
 import com.example.aps1.R
 import com.example.facemaskdetection.model.Police
+import com.example.facemaskdetection.model.Signal
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -31,6 +33,7 @@ class LoginActivity : AppCompatActivity() {
         var chk: CheckBox
         chk= findViewById(R.id.loginCB)
         val TAG = "RajGarg";
+        var flag = false
         val button: Button =findViewById(R.id.loginBTN) as Button
         button.setOnClickListener(View.OnClickListener {
             val str: String = textView.text.toString().trim()
@@ -40,29 +43,21 @@ class LoginActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { result ->
                         for (document in result){
-
-                        }
-                    }
-
-            }
-            else{
-                db.collection("police")
-                    .get()
-                    .addOnSuccessListener { result ->
-                        for (document in result) {
-                            Log.d(TAG, "${document.id} => ${document.data}")
-                            if(document.data["uname"] == str && document.data["upwd"] == str2){
-                                Police.uname = document.data["uname"].toString()
-                                Police.signal = document.data["signal"].toString()
-                                Police.uid = document.data["uid"].toString()
-                                Police.upwd = document.data["upwd"].toString()
+                            if(document.data["sname"].toString() == str && document.data["spwd"].toString() == str2){
+                                flag=true
+                                Signal.sid = document.data["sid"].toString();
+                                Signal.sname = document.data["sname"].toString();
+                                Signal.spwd = document.data["spwd"].toString();
+                                var nSignals = document.data["nearbySignals"].toString()
+                                var signal = nSignals.substring(1,nSignals.length-1)
+                                Signal.nearbySignals = signal.split(",").map { it.trim() }
+                                Log.d(TAG,signal);
+                                Log.d(TAG,Signal.nearbySignals.toString())
                                 Toast.makeText(this,"Login Successful",Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, PoliceActivity::class.java).apply {
+                                val intent = Intent(this, MainActivity::class.java).apply {
 
                                 }
                                 startActivity(intent)
-
-                                Log.d(TAG,"Login Successful!!!")
                                 finish()
                             }
                         }
@@ -72,6 +67,34 @@ class LoginActivity : AppCompatActivity() {
                         Log.w(TAG, "Check your internet connection", exception)
                     }
             }
+            else{
+                db.collection("police")
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            Log.d(TAG, "${document.id} => ${document.data}")
+                            if(document.data["uname"].toString() == str && document.data["upwd"].toString() == str2){
+                                flag=true
+                                Police.uname = document.data["uname"].toString()
+                                Police.signal = document.data["signal"].toString()
+                                Police.uid = document.data["uid"].toString()
+                                Police.upwd = document.data["upwd"].toString()
+                                Toast.makeText(this,"Login Successful",Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this, PoliceActivity::class.java).apply {
+
+                                }
+                                startActivity(intent)
+                                finish()
+                            }
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Toast.makeText(this,"Check your internet connection",Toast.LENGTH_SHORT).show()
+                        Log.w(TAG, "Check your internet connection", exception)
+                    }
+            }
+            if(flag==false)
+                Toast.makeText(applicationContext,"Incorrect userrname or password",Toast.LENGTH_SHORT).show();
         })
     }
 }

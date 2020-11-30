@@ -2,8 +2,10 @@
     <string name="app_name">Face Mask Detection</string>
 
     <string-array name="signallist">
-        <item>signal0001</item>
-        <item>signal0002</item>
+        <item>signal000001</item>
+        <item>signal000002</item>
+        <item>signal000003</item>
+        <item>signal000004</item>
     </string-array>
 
 </resources>

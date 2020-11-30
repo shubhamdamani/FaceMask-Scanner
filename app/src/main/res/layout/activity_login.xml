@@ -7,6 +7,7 @@
     tools:context="com.example.facemaskdetection.LoginActivity">
 
     <EditText
+        android:text="signalA"
         android:layout_width="250dp"
         android:layout_height="70dp"
         android:background="@drawable/capsule"
@@ -19,6 +20,7 @@
 
         />
     <EditText
+        android:text="spass000001"
         android:layout_width="250dp"
         android:layout_height="70dp"
         android:background="@drawable/capsule"

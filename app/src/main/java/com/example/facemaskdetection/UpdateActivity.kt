@@ -44,7 +44,7 @@ class UpdateActivity : AppCompatActivity() {
             }
         }
         button.setOnClickListener(View.OnClickListener {
-            db.collection("police").document("id").update("signal",newsignal).addOnSuccessListener {
+            db.collection("police").document(Police.uid).update("signal",newsignal).addOnSuccessListener {
                 Police.signal=newsignal
                 Toast.makeText(this,"signal updated",Toast.LENGTH_SHORT).show()
                 finish()
@@ -52,8 +52,6 @@ class UpdateActivity : AppCompatActivity() {
             }.addOnFailureListener{
                 Toast.makeText(this,"update failed",Toast.LENGTH_SHORT).show()
             }
-
-
         })
     }
 }
