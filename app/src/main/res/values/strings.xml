@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Face Mask Detection</string>
+
+    <string-array name="signallist">
+        <item>signal0001</item>
+        <item>signal0002</item>
+    </string-array>
+
 </resources>

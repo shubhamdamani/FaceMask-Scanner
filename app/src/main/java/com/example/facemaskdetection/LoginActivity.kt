@@ -1,5 +1,6 @@
 package com.example.facemaskdetection
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.system.Os.uname
@@ -8,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
+import android.widget.Toast
 import com.example.aps1.R
 import com.example.facemaskdetection.model.Police
 import com.google.firebase.firestore.ktx.firestore
@@ -34,6 +36,13 @@ class LoginActivity : AppCompatActivity() {
             val str: String = textView.text.toString().trim()
             val str2: String = textView2.text.toString().trim()
             if(chk.isChecked){
+                db.collection("signal")
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result){
+
+                        }
+                    }
 
             }
             else{
@@ -47,12 +56,20 @@ class LoginActivity : AppCompatActivity() {
                                 Police.signal = document.data["signal"].toString()
                                 Police.uid = document.data["uid"].toString()
                                 Police.upwd = document.data["upwd"].toString()
-                                Log.d(TAG,"Successful!!!")
+                                Toast.makeText(this,"Login Successful",Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this, PoliceActivity::class.java).apply {
+
+                                }
+                                startActivity(intent)
+
+                                Log.d(TAG,"Login Successful!!!")
+                                finish()
                             }
                         }
                     }
                     .addOnFailureListener { exception ->
-                        Log.w(TAG, "Error getting documents.", exception)
+                        Toast.makeText(this,"Check your internet connection",Toast.LENGTH_SHORT).show()
+                        Log.w(TAG, "Check your internet connection", exception)
                     }
             }
         })
