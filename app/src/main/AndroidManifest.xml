@@ -15,6 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name="com.example.facemaskdetection.IntruderActivity"></activity>
+        <activity android:name="com.example.facemaskdetection.UpdateActivity" />
+        <activity android:name="com.example.facemaskdetection.PoliceActivity" />
         <activity android:name="com.example.facemaskdetection.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
