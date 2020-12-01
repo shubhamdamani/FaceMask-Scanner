@@ -1,8 +1,6 @@
 package com.example.aps1
 
 import android.content.ContentValues
-import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.*
 import android.net.Uri
 import android.os.Build
@@ -14,12 +12,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import com.android.volley.AuthFailureError
+import com.android.volley.Request.Method.POST
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.facemaskdetection.Box
+import com.example.facemaskdetection.NotificationsItem
 import com.example.facemaskdetection.model.Signal
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.vision.Frame
 import com.google.android.gms.vision.face.FaceDetector
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -27,6 +34,9 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_main.*
+import okhttp3.Request
+import org.json.JSONException
+import org.json.JSONObject
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.common.ops.NormalizeOp
@@ -36,6 +46,8 @@ import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
 import org.tensorflow.lite.support.label.TensorLabel
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import com.android.volley.Request.Method.POST
+import com.google.firebase.messaging.FirebaseMessaging
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -44,6 +56,9 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+    private var mRequestQue: RequestQueue? = null
+    private val URL = "https://fcm.googleapis.com/fcm/send"
+    private var databaseReference: DatabaseReference? = null
     private var firebaseStore: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
     private var lastUsed = System.currentTimeMillis()-2000
@@ -51,8 +66,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         cameraView.setLifecycleOwner(this)
+        FirebaseMessaging.getInstance().subscribeToTopic("1");
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseStore = FirebaseStorage.getInstance()
         storageReference = FirebaseStorage.getInstance().reference
+        mRequestQue = Volley.newRequestQueue(this);
         // Create a FaceDetector
         val faceDetector = FaceDetector.Builder(this).setTrackingEnabled(true)
             .build()
@@ -154,6 +173,7 @@ class MainActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val downloadUri = task.result
                 addUploadRecordToDb(downloadUri.toString())
+                sendNotificatio()
                 finish()
             } else {
                 // Handle failures
@@ -254,6 +274,58 @@ class MainActivity : AppCompatActivity() {
           //  Toast.makeText(applicationContext,"Saved to Photos",Toast.LENGTH_SHORT).show();
         }
         return finalImageUri
+    }
+
+    private fun sendNotificatio() {
+        val json = JSONObject()
+        try {
+            json.put("to", "/topics/" + "events")
+            val notificationObj = JSONObject()
+            notificationObj.put("title", "1")
+            notificationObj.put("body", "Click to see details")
+//            val extraData = JSONObject()
+//            extraData.put("itemId", itemId)
+//            extraData.put("category", categ)
+            json.put("notification", notificationObj)
+            //json.put("data", extraData)
+            val request: JsonObjectRequest =
+                object : JsonObjectRequest(
+                    POST,
+                    URL,
+                    json,
+                    Response.Listener {
+                        val obj =
+                            NotificationsItem("1", "Click to see details", "1", "1")
+                        databaseReference?.child("Notifications")?.child("1")?.setValue(obj)
+                        Log.d("MUR", "onResponse: ")
+                    },
+                    Response.ErrorListener { error ->
+                        Log.d(
+                            "MUR",
+                            "onError: " + error.networkResponse
+                        )
+                    }
+                ) {
+                    @Throws(AuthFailureError::class)
+                    override fun getHeaders(): Map<String, String> {
+                        var header= mapOf<String,String>("content-type" to "application/json","authorization" to
+                            "key=AAAAJrPAi-w:APA91bEYsF9_iclkzUraucMypJdPqVx-O9U1HBbHz56Nt6bHZBPvA8db1RHnyVygi5ODvCoj8pNSHfSW3s9VD_06NBfQHwnEJRAZ_K1JP4le9qiTulWQJPOcbJitQTfAAG3wbOUPCmD5"
+                        )
+
+//                        header["re"]="r"
+//                        header.put("content-type", "application/json")
+//                        header.put(
+//                            "authorization",
+//                            "key=AAAAJnUq71Q:APA91bFPX6h1jweB072PbEikMvTG300HVuvun0ATUUMMYe6J-RXGp-6Sun0bcTe5jef_Ig9XnFufKFHuWgJjujnkhl25Da9Wf82GQ9JIL39QTf23r15M17PpEPZNsV9-b-ELV9OeoTgE"
+//                        )
+                        return header
+                    }
+                }
+            mRequestQue!!.add(request)
+        } catch (e: JSONException) {
+            Log.d("notifE", e.toString())
+            e.printStackTrace()
+        }
     }
 
 }

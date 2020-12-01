@@ -15,7 +15,7 @@ import com.example.facemaskdetection.model.Signal
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class IntruderActivity : AppCompatActivity() {
+class IntruderActivity : AppCompatActivity()  {
     private lateinit var linearLayoutManager: LinearLayoutManager
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CustomAdapter
