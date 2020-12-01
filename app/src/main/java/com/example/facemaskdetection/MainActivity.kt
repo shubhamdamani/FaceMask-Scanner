@@ -134,34 +134,35 @@ class MainActivity : AppCompatActivity() {
                 Log.d("RajGarg",randStrings)
                 val ref = storageReference?.child("uploads/" + randStrings)
                 try{
-                    saveMediaToStorage(bitmap)
-                    val wrapper = ContextWrapper(applicationContext)
-                    // Initializing a new file
-                    // The bellow line return a directory in internal storage
-                    var file_path = wrapper.getDir("images", Context.MODE_PRIVATE).toString()
-//                val file_path: String =
-//                    Environment.getDataDirectory().getAbsolutePath().toString() +
-//                            "/FaceMaskImg"
-                    Log.d("RajGarg","001 YO")
-                    val dir = File(file_path)
-                    Log.d("RajGarg","002 YO")
-                    if (!dir.exists()){
-                        dir.mkdirs()
-                        Log.d("RajGarg","003 YO")
-                    }
-                    val file = File(dir, randStrings + ".png")
-                    Log.d("RajGarg","004 YO")
-                    val fOut = FileOutputStream(file)
-                    Log.d("RajGarg","111  Face Detected YO")
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut)
-                    fOut.flush()
-                    fOut.close()
-                    val finalFilePath = file_path+randStrings+".png"
-                    val fPath = finalFilePath.toUri()
-                    val uploadTask = ref?.putFile(fPath!!)
+                    val uri = saveMediaToStorage(bitmap)
+//                    val wrapper = ContextWrapper(applicationContext)
+//                    // Initializing a new file
+//                    // The bellow line return a directory in internal storage
+//                    var file_path = wrapper.getDir("images", Context.MODE_PRIVATE).toString()
+////                val file_path: String =
+////                    Environment.getDataDirectory().getAbsolutePath().toString() +
+////                            "/FaceMaskImg"
+//                    Log.d("RajGarg","001 YO")
+//                    val dir = File(file_path)
+//                    Log.d("RajGarg","002 YO")
+//                    if (!dir.exists()){
+//                        dir.mkdirs()
+//                        Log.d("RajGarg","003 YO")
+//                    }
+//                    val file = File(dir, randStrings + ".png")
+//                    Log.d("RajGarg","004 YO")
+//                    val fOut = FileOutputStream(file)
+//                    Log.d("RajGarg","111  Face Detected YO")
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut)
+//                    fOut.flush()
+//                    fOut.close()
+//                    val finalFilePath = file_path+randStrings+".png"
+//                    val fPath = finalFilePath.toUri()
+                    val uploadTask = ref?.putFile(uri!!)
                     Log.d("RajGarg","012 YO")
                     val urlTask = uploadTask?.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
                         if (!task.isSuccessful) {
+                            Log.d("RajGarg","Failed Upload "+task.exception)
                             task.exception?.let {
                                 throw it
                             }
@@ -169,14 +170,16 @@ class MainActivity : AppCompatActivity() {
                         return@Continuation ref.downloadUrl
                     })?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
+                            Log.d("RajGarg","Upload Successful")
                             val downloadUri = task.result
                             addUploadRecordToDb(downloadUri.toString())
                             finish()
                         } else {
+                            Log.d("RajGarg","Some failure "+task.exception)
                             // Handle failures
                         }
                     }?.addOnFailureListener{
-
+                        Log.d("RajGarg","202   Face Detected YO ")
                     }
                     Log.d("RajGarg","222   Face Detected YO")
                 }
@@ -236,13 +239,13 @@ class MainActivity : AppCompatActivity() {
         return label
     }
 
-    fun saveMediaToStorage(bitmap: Bitmap) {
+    fun saveMediaToStorage(bitmap: Bitmap) : Uri? {
         //Generating a file name
         val filename = "${System.currentTimeMillis()}.jpg"
 
         //Output stream
         var fos: OutputStream? = null
-
+        var finalImageUri : Uri? = null
         //For devices running android >= Q
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             //getting the contentResolver
@@ -260,7 +263,9 @@ class MainActivity : AppCompatActivity() {
                 //Inserting the contentValues to contentResolver and getting the Uri
                 val imageUri: Uri? =
                     resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
+                if (imageUri != null) {
+                    finalImageUri = imageUri
+                }
                 //Opening an outputstream with the Uri that we got
                 fos = imageUri?.let { resolver.openOutputStream(it) }
             }
@@ -270,6 +275,7 @@ class MainActivity : AppCompatActivity() {
             val imagesDir =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
             val image = File(imagesDir, filename)
+            finalImageUri = image.toUri()
             fos = FileOutputStream(image)
         }
 
@@ -278,6 +284,7 @@ class MainActivity : AppCompatActivity() {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
           //  Toast.makeText(applicationContext,"Saved to Photos",Toast.LENGTH_SHORT).show();
         }
+        return finalImageUri
     }
 
 }
