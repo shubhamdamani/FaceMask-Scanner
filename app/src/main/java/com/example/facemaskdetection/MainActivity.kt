@@ -46,6 +46,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     private var firebaseStore: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
+    private var lastUsed = System.currentTimeMillis()-2000
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -119,78 +120,46 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     thisFace.height.toInt()
                 })
-            Log.d("RajGarg","Face Detected YO")
             val label = predict(bitmapCropped)
             var predictionn = ""
             val with = label["WithMask"]?: 0F
             val without = label["WithoutMask"]?: 0F
             if (with > without){
-                Log.d("RajGarg","Masked face detected")
                 predictionn = "With Mask : " + String.format("%.1f", with*100) + "%"
             } else {
-                Log.d("RajGarg","Non masked face detected")
                 predictionn = "Without Mask : " + String.format("%.1f", without*100) + "%"
-                var randStrings = UUID.randomUUID().toString()
-                Log.d("RajGarg",randStrings)
-                val ref = storageReference?.child("uploads/" + randStrings)
-                try{
-                    val uri = saveMediaToStorage(bitmap)
-//                    val wrapper = ContextWrapper(applicationContext)
-//                    // Initializing a new file
-//                    // The bellow line return a directory in internal storage
-//                    var file_path = wrapper.getDir("images", Context.MODE_PRIVATE).toString()
-////                val file_path: String =
-////                    Environment.getDataDirectory().getAbsolutePath().toString() +
-////                            "/FaceMaskImg"
-//                    Log.d("RajGarg","001 YO")
-//                    val dir = File(file_path)
-//                    Log.d("RajGarg","002 YO")
-//                    if (!dir.exists()){
-//                        dir.mkdirs()
-//                        Log.d("RajGarg","003 YO")
-//                    }
-//                    val file = File(dir, randStrings + ".png")
-//                    Log.d("RajGarg","004 YO")
-//                    val fOut = FileOutputStream(file)
-//                    Log.d("RajGarg","111  Face Detected YO")
-//                    bitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut)
-//                    fOut.flush()
-//                    fOut.close()
-//                    val finalFilePath = file_path+randStrings+".png"
-//                    val fPath = finalFilePath.toUri()
-                    val uploadTask = ref?.putFile(uri!!)
-                    Log.d("RajGarg","012 YO")
-                    val urlTask = uploadTask?.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                        if (!task.isSuccessful) {
-                            Log.d("RajGarg","Failed Upload "+task.exception)
-                            task.exception?.let {
-                                throw it
-                            }
-                        }
-                        return@Continuation ref.downloadUrl
-                    })?.addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.d("RajGarg","Upload Successful")
-                            val downloadUri = task.result
-                            addUploadRecordToDb(downloadUri.toString())
-                            finish()
-                        } else {
-                            Log.d("RajGarg","Some failure "+task.exception)
-                            // Handle failures
-                        }
-                    }?.addOnFailureListener{
-                        Log.d("RajGarg","202   Face Detected YO ")
-                    }
-                    Log.d("RajGarg","222   Face Detected YO")
+                if(System.currentTimeMillis()-lastUsed>=2000){
+                    lastUsed = System.currentTimeMillis()
+                    uploadInCloudStorage(bitmap)
                 }
-                catch(e : Exception){
-                    Log.d("RajGarg",e.toString())
-                }
-
             }
             boundingBoxList.add(Box(RectF(left, top, right, bottom), predictionn, with>without))
         }
         return boundingBoxList
+    }
+
+    private fun uploadInCloudStorage(bitmap : Bitmap){
+        var randStrings = UUID.randomUUID().toString()
+        val uri = saveMediaToStorage(bitmap)
+        val ref = storageReference?.child("uploads/" + randStrings)
+        val uploadTask = ref?.putFile(uri!!)
+        val urlTask = uploadTask?.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            return@Continuation ref.downloadUrl
+        })?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                addUploadRecordToDb(downloadUri.toString())
+                finish()
+            } else {
+                // Handle failures
+            }
+        }?.addOnFailureListener{
+        }
     }
 
     private fun addUploadRecordToDb(uri: String){
