@@ -7,16 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/imgview"
-        android:background="@mipmap/ic_launcher_round"
         android:padding="15dp"
         android:layout_margin="10dp"
-
         />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
-        android:id="@+id/imgtitle"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/imgview"/>
 
 </RelativeLayout>

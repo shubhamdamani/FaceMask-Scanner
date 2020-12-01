@@ -7,9 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.aps1.R
+import com.squareup.picasso.Picasso
 
 
-class CustomAdapter(private val dataSet: Array<String>) :
+class CustomAdapter(private val dataSet: List<String>) :
     RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     /**
@@ -17,12 +18,10 @@ class CustomAdapter(private val dataSet: Array<String>) :
      * (custom ViewHolder).
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView
         val imgView: ImageView
 
         init {
             // Define click listener for the ViewHolder's View.
-            textView = view.findViewById(R.id.imgtitle)
             imgView = view.findViewById(R.id.imgview)
         }
     }
@@ -41,7 +40,8 @@ class CustomAdapter(private val dataSet: Array<String>) :
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.textView.text = dataSet[position]
+//        viewHolder.textView.text = dataSet.get(position)
+        Picasso.get().load(dataSet.get(position)).into(viewHolder.imgView)
     }
 
     // Return the size of your dataset (invoked by the layout manager)
