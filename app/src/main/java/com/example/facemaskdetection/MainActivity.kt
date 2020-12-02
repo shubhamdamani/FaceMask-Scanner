@@ -12,12 +12,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import androidx.fragment.app.FragmentTransaction
 import com.android.volley.AuthFailureError
 import com.android.volley.Request.Method.POST
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.example.facemaskdetection.BlankFragment
 import com.example.facemaskdetection.Box
 import com.example.facemaskdetection.NotificationsItem
 import com.example.facemaskdetection.model.Signal
@@ -30,11 +32,11 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.Request
 import org.json.JSONException
 import org.json.JSONObject
 import org.tensorflow.lite.Interpreter
@@ -46,8 +48,6 @@ import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
 import org.tensorflow.lite.support.label.TensorLabel
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
-import com.android.volley.Request.Method.POST
-import com.google.firebase.messaging.FirebaseMessaging
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         cameraView.setLifecycleOwner(this)
         FirebaseMessaging.getInstance().subscribeToTopic("1");
+
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseStore = FirebaseStorage.getInstance()
@@ -173,8 +174,17 @@ class MainActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val downloadUri = task.result
                 addUploadRecordToDb(downloadUri.toString())
-                sendNotificatio()
-                finish()
+                val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
+//// Replace the contents of the container with the new fragment
+//// Replace the contents of the container with the new fragment
+                ft.show( BlankFragment())
+// or ft.add(R.id.your_placeholder, new FooFragment());
+// Complete the changes added above
+// or ft.add(R.id.your_placeholder, new FooFragment());
+// Complete the changes added above
+                ft.commit()
+                //sendNotificatio()
+                //finish()
             } else {
                 // Handle failures
             }
