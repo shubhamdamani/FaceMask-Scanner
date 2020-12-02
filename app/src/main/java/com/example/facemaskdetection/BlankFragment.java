@@ -1,5 +1,6 @@
 package com.example.facemaskdetection;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -73,7 +74,6 @@ public class BlankFragment extends Fragment {
         super.onCreate(savedInstanceState);
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
-
         mRequestQue = Volley.newRequestQueue(getContext());
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -85,9 +85,11 @@ public class BlankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        // crash kr rha
         sendNotificatio();
         return inflater.inflate(R.layout.fragment_blank, container, false);
     }
+
     private void sendNotificatio() {
 
         JSONObject json = new JSONObject();

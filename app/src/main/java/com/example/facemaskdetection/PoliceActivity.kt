@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Button
 import com.example.aps1.R
 import com.example.facemaskdetection.model.Police
+import com.google.firebase.messaging.FirebaseMessaging
 
 class PoliceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +15,7 @@ class PoliceActivity : AppCompatActivity() {
         setContentView(R.layout.activity_police)
         val button: Button =findViewById(R.id.updBTN) as Button
         val button1: Button =findViewById(R.id.intruderBTN) as Button
-
+        FirebaseMessaging.getInstance().subscribeToTopic(Police.signal);
         button.setOnClickListener(View.OnClickListener {
             val intent = Intent(this, UpdateActivity::class.java).apply {
 

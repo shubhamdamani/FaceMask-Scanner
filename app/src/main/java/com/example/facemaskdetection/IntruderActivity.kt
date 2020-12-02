@@ -20,7 +20,7 @@ class IntruderActivity : AppCompatActivity()  {
     lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CustomAdapter
     private lateinit var imageList : List<String>
-
+    //do sec
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

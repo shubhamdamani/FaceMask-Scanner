@@ -5,6 +5,6 @@ class Signal{
         var sname="uname"
         var spwd="upwd"
         var sid="uid"
-        var nearbySignals= listOf<String>()
+        public var nearbySignals= listOf<String>()
     }
 }

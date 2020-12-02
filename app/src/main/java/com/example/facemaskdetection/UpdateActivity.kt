@@ -8,6 +8,7 @@ import com.example.aps1.R
 import com.example.facemaskdetection.model.Police
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 
 class UpdateActivity : AppCompatActivity() {
     var newsignal=""
@@ -45,10 +46,12 @@ class UpdateActivity : AppCompatActivity() {
         }
         button.setOnClickListener(View.OnClickListener {
             db.collection("police").document(Police.uid).update("signal",newsignal).addOnSuccessListener {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(Police.signal);
                 Police.signal=newsignal
+                FirebaseMessaging.getInstance().subscribeToTopic(Police.signal);
                 Toast.makeText(this,"signal updated",Toast.LENGTH_SHORT).show()
                 finish()
-
+            // ok
             }.addOnFailureListener{
                 Toast.makeText(this,"update failed",Toast.LENGTH_SHORT).show()
             }

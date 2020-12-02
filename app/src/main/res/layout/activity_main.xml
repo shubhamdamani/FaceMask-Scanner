@@ -7,11 +7,11 @@
     tools:context=".MainActivity">
 
 
-    <fragment
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fragg"
-        class="com.example.facemaskdetection.BlankFragment"/>
+<!--    <fragment-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/fragg"-->
+<!--        class="com.example.facemaskdetection.BlankFragment"/>-->
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/cameraView"
         android:layout_width="wrap_content"

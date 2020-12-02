@@ -21,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.facemaskdetection.BlankFragment
 import com.example.facemaskdetection.Box
+import com.example.facemaskdetection.Helper
 import com.example.facemaskdetection.NotificationsItem
 import com.example.facemaskdetection.model.Signal
 import com.google.android.gms.tasks.Continuation
@@ -62,11 +63,12 @@ class MainActivity : AppCompatActivity() {
     private var firebaseStore: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
     private var lastUsed = System.currentTimeMillis()-2000
+    private var flag = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         cameraView.setLifecycleOwner(this)
-        FirebaseMessaging.getInstance().subscribeToTopic("1");
+        //FirebaseMessaging.getInstance().subscribeToTopic("1");
 
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -119,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         // Detect the faces
         val frame = Frame.Builder().setBitmap(bitmap).build()
         val faces = faceDetector.detect(frame)
-
+        //ruk
         // Mark out the identified face
         for (i in 0 until faces.size()) {
             val thisFace = faces.valueAt(i)
@@ -148,9 +150,10 @@ class MainActivity : AppCompatActivity() {
                 predictionn = "With Mask : " + String.format("%.1f", with*100) + "%"
             } else {
                 predictionn = "Without Mask : " + String.format("%.1f", without*100) + "%"
-                if(System.currentTimeMillis()-lastUsed>=2000){
+                if(System.currentTimeMillis()-lastUsed>=5000){
                     lastUsed = System.currentTimeMillis()
                     uploadInCloudStorage(bitmap)
+                    // login p kyu aa rha ab
                 }
             }
             boundingBoxList.add(Box(RectF(left, top, right, bottom), predictionn, with>without))
@@ -158,39 +161,51 @@ class MainActivity : AppCompatActivity() {
         return boundingBoxList
     }
 
-    private fun uploadInCloudStorage(bitmap : Bitmap){
+    private fun uploadInCloudStorage(bitmap : Bitmap) {
         var randStrings = UUID.randomUUID().toString()
         val uri = saveMediaToStorage(bitmap)
         val ref = storageReference?.child("uploads/" + randStrings)
         val uploadTask = ref?.putFile(uri!!)
-        val urlTask = uploadTask?.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-            if (!task.isSuccessful) {
-                task.exception?.let {
-                    throw it
+        val urlTask =
+            uploadTask?.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
                 }
-            }
-            return@Continuation ref.downloadUrl
-        })?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val downloadUri = task.result
-                addUploadRecordToDb(downloadUri.toString())
-                val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
+                return@Continuation ref.downloadUrl
+            })?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUri = task.result
+                    addUploadRecordToDb(downloadUri.toString())
+                    Helper.sendNotification(applicationContext,randStrings)
+//                    val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
 //// Replace the contents of the container with the new fragment
 //// Replace the contents of the container with the new fragment
-                ft.show( BlankFragment())
+//                    if(flag == 1){
+//                        ft.show(BlankFragment())
+//                        flag=2
+//                        // kha h?
+//                    }
+//                    else{
+                    // 5 second kr de?
+//                        //fragment ki id
+//                        ft.replace(R.id.fragg,BlankFragment())
+//                    }
 // or ft.add(R.id.your_placeholder, new FooFragment());
 // Complete the changes added above
 // or ft.add(R.id.your_placeholder, new FooFragment());
 // Complete the changes added above
-                ft.commit()
-                //sendNotificatio()
-                //finish()
-            } else {
-                // Handle failures
+//                    ft.commit()
+                    //sendNotificatio()
+                    //finish()
+                } else {
+                    // Handle failures
+                }
+            }?.addOnFailureListener {
             }
-        }?.addOnFailureListener{
-        }
     }
+    // ok
 
     private fun addUploadRecordToDb(uri: String){
         val db = Firebase.firestore
@@ -215,7 +230,7 @@ class MainActivity : AppCompatActivity() {
 
         var inputImageBuffer = TensorImage(imageDataType)
         val outputBuffer = TensorBuffer.createFixedSize(outputShape, outputDataType) 
-
+        // yup
         // preprocess
         val cropSize = kotlin.math.min(input.width, input.height)
         val imageProcessor = ImageProcessor.Builder()
