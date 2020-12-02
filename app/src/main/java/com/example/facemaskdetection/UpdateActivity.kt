@@ -51,7 +51,7 @@ class UpdateActivity : AppCompatActivity() {
                 FirebaseMessaging.getInstance().subscribeToTopic(Police.signal);
                 Toast.makeText(this,"signal updated",Toast.LENGTH_SHORT).show()
                 finish()
-            // ok
+            //
             }.addOnFailureListener{
                 Toast.makeText(this,"update failed",Toast.LENGTH_SHORT).show()
             }

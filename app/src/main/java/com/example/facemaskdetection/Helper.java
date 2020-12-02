@@ -33,9 +33,13 @@ public class Helper {
             mRequestQue = Volley.newRequestQueue(context);
             JSONObject json = new JSONObject();
             try {
+                Log.d("RajGarg",i);
+
+                // police ka code tere isme kha change hua h
                 json.put("to","/topics/"+i);
                 JSONObject notificationObj = new JSONObject();
-                notificationObj.put("title","One intruder detected from :"+Signal.Companion.getSname());
+                //kha 1 kru?
+                notificationObj.put("title","One intruder detected from :"+Signal.Companion.getSid());
                 // ok cool
                 notificationObj.put("body","Click to see details");
                 json.put("notification",notificationObj);
@@ -44,6 +48,7 @@ public class Helper {
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
+                                //itemId se to koi issue nhi?
                                 NotificationsItem obj = new NotificationsItem(itemID,"Click to see details","One intruder detected from :"+Signal.Companion.getSname(),Signal.Companion.getSid());
                                 databaseReference.child("Notifications").child(itemID).setValue(obj);
                                 Log.d("MUR", "onResponse: ");
