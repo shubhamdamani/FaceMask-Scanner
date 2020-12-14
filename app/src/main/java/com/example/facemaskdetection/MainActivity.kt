@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     private var storageReference: StorageReference? = null
     private var lastUsed = System.currentTimeMillis()-2000
     private var flag = 1
+    private var start
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -124,6 +125,7 @@ class MainActivity : AppCompatActivity() {
         //ruk
         // Mark out the identified face
         for (i in 0 until faces.size()) {
+            start = System.currentTimeMillis()
             val thisFace = faces.valueAt(i)
             val left = thisFace.position.x
             val top = thisFace.position.y
@@ -178,7 +180,8 @@ class MainActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val downloadUri = task.result
                     addUploadRecordToDb(downloadUri.toString())
-                    Helper.sendNotification(applicationContext,randStrings)
+                    if(System.currentTimeMillis() - start <= 5000)
+                        Helper.sendNotification(applicationContext,randStrings)
 //                    val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
 //// Replace the contents of the container with the new fragment
 //// Replace the contents of the container with the new fragment
